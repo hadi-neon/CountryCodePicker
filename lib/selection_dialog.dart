@@ -17,6 +17,8 @@ class SelectionDialog extends StatefulWidget {
   final Size? size;
   final bool hideSearch;
   final Icon? closeIcon;
+  final String? notFoundText;
+  final Widget? title;
 
   /// Background color of SelectionDialog
   final Color? backgroundColor;
@@ -45,6 +47,8 @@ class SelectionDialog extends StatefulWidget {
     this.barrierColor,
     this.hideSearch = false,
     this.closeIcon,
+    this.notFoundText,
+    this.title,
   })  : this.searchDecoration = searchDecoration.prefixIcon == null
             ? searchDecoration.copyWith(prefixIcon: Icon(Icons.search))
             : searchDecoration,
@@ -59,8 +63,8 @@ class _SelectionDialogState extends State<SelectionDialog> {
   late List<CountryCode> filteredElements;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(0.0),
+  Widget build(BuildContext context) => SafeArea(
+        top: true,
         child: Container(
           clipBehavior: Clip.hardEdge,
           width: widget.size?.width ?? MediaQuery.of(context).size.width,
@@ -69,7 +73,10 @@ class _SelectionDialogState extends State<SelectionDialog> {
           decoration: widget.boxDecoration ??
               BoxDecoration(
                 color: widget.backgroundColor ?? Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: widget.barrierColor ?? Colors.grey.withOpacity(1),
@@ -83,15 +90,17 @@ class _SelectionDialogState extends State<SelectionDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              IconButton(
-                padding: const EdgeInsets.all(0),
-                iconSize: 20,
-                icon: widget.closeIcon!,
-                onPressed: () => Navigator.pop(context),
-              ),
+              widget.title ??
+                  IconButton(
+                    padding: const EdgeInsets.all(0),
+                    iconSize: 20,
+                    icon: widget.closeIcon!,
+                    onPressed: () => Navigator.pop(context),
+                  ),
               if (!widget.hideSearch)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   child: TextField(
                     style: widget.searchStyle,
                     decoration: widget.searchDecoration,
@@ -176,9 +185,15 @@ class _SelectionDialogState extends State<SelectionDialog> {
       return widget.emptySearchBuilder!(context);
     }
 
-    return Center(
-      child: Text(CountryLocalizations.of(context)?.translate('no_country') ??
-          'No country found'),
+    return Padding(
+      padding: EdgeInsets.only(top: 20),
+      child: Center(
+        child: Text(
+          widget.notFoundText ??
+              CountryLocalizations.of(context)?.translate('no_country') ??
+              'No country found',
+        ),
+      ),
     );
   }
 
