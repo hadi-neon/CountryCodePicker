@@ -65,6 +65,7 @@ class _SelectionDialogState extends State<SelectionDialog> {
   @override
   Widget build(BuildContext context) => SafeArea(
         top: true,
+        bottom: false,
         child: Container(
           clipBehavior: Clip.hardEdge,
           width: widget.size?.width ?? MediaQuery.of(context).size.width,
