@@ -159,10 +159,11 @@ class _SelectionDialogState extends State<SelectionDialog> {
                 decoration: widget.flagDecoration,
                 clipBehavior:
                     widget.flagDecoration == null ? Clip.none : Clip.hardEdge,
-                child: Image.asset(
-                  e.flagUri!,
-                  package: 'country_code_picker',
-                  width: widget.flagWidth,
+                child: Text(
+                  countryToEmoji(
+                    e.code!,
+                  ),
+                  style: widget.textStyle,
                 ),
               ),
             ),
@@ -218,5 +219,14 @@ class _SelectionDialogState extends State<SelectionDialog> {
 
   void _selectItem(CountryCode e) {
     Navigator.pop(context, e);
+  }
+
+  String countryToEmoji(String country) {
+    return country.toUpperCase().replaceAllMapped(
+          RegExp(r'[A-Z]'),
+          (match) => String.fromCharCode(
+            match.group(0)!.codeUnitAt(0) + 127397,
+          ),
+        );
   }
 }
